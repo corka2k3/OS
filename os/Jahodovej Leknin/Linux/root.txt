@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Najde vsechny.csv a .bat soubory v dosavadnim ulozisti
+find . -type f \( -name "*.csv" -o -name "*.bat" \) | while read file; do
+  # Check if the file does not belong to the root user
+  if [ "$(stat -c %U "$file")" != "root" ]; then
+    # Zkontroluje zda skupina ma prava a spusti akci
+    if [ "$(stat -c %A "$file" | cut -c5)" == "r" ] && [ "$(stat -c %A "$file" | cut -c10)" == "x" ]; then
+      # Delete the file
+      rm "$file"
+    fi
+  fi
+done

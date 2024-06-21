@@ -1,0 +1,25 @@
+#!/bin/bash
+file=$1
+result=0
+expected_line_number=1
+
+while IFS= read -r line; do
+    if ! [[ "$line" =~ ^[0-9]+[[:space:]]{2} ]]; then
+        echo "Chyba: Řádek $expected_line_number neobsahuje číslo následované dvěma mezerami."
+        result=1
+        break
+    fi
+    line_number=$(echo $line | cut -d' ' -f1)
+    if [ "$line_number" -ne "$expected_line_number" ]; then
+        echo "Chyba: Číslo řádku nesouhlasí. Očekáváno: $expected_line_number, nalezeno: $line_number."
+        result=1
+        break
+    fi
+    ((expected_line_number++))
+done < "$file"
+
+if [ $result -eq 0 ]; then
+    echo "Všechny řádky jsou v pořádku."
+fi
+
+exit $result

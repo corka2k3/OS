@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#Vyhledávám soubory patřící k aktuálně přihlášenému uživateli 
+search_files() {
+    local directory="$1"
+    local user="$2"
+
+    
+    find "$directory" -type f -user "$user" -perm /o+w
+}
+
+
+current_user=$(whoami)
+
+#Zde hledam ceste zadané argumentem jinak hledám v aktuálním adresáři
+if [ -n "$1" ]; then
+    search_files "$1" "$current_user"
+else
+    search_files . "$current_user"
+fi

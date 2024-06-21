@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Zkontrolovat, zda byl poskytnut argument
+if [ -z "$1" ]; then
+    echo "Chyba: Musíte zadat argument {sudé}1{liché} pro vyhledání uživatelů připojených k lichým nebo sudým terminálům."
+    exit 1
+fi
+
+# Získání lichého nebo sudého čísla pro vyhledání
+if [ "$1" == "sude" ]; then
+    number_pattern="^[0-9]*[02468]$"
+elif [ "$1" == "licha" ]; then
+    number_pattern="^[0-9]*[13579]$"
+else
+    echo "Chyba: Argument musí být buď 'sude' nebo 'licha'."
+    exit 1
+fi
+
+# Získání uživatelů připojených k terminálům odpovídajícím vzoru čísla
+users=$(who | awk '$2 ~ /^pts\// && $2 ~ pattern { print $1 }' pattern="$number_pattern" | sort -u)
+
+# Vypsání uživatelů
+echo "Uživatelé připojení k $1 číslům terminálů:"
+echo "$users"

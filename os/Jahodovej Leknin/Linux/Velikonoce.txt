@@ -1,0 +1,9 @@
+#!/bin/bash
+#Ziskavam data ohledne data velikonoc
+easter_date=$(ncal -e '2025' | awk 'NR==2{print $2}')
+
+#Vypocet zbývajících dnu do velikonoc
+days_remaining=$(( ($(date -d "$easter_date" +%s) - $(date +%s)) / 86400 ))
+
+
+echo "Počet dní zbývajících do Velikonoční neděle: $days_remaining"

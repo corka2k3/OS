@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Povolit rozšířené funkce a zpožděnou expanzi (v Bashi to není potřeba)
+
+min=0
+max=0
+beh_cyklu=0
+
+# Čtení třetího tokenu odděleného středníkem z každého řádku souboru prac.csv
+while IFS=';' read -r _ _ value; do
+
+  if [ $beh_cyklu -eq 0 ]; then
+    min=$value
+    max=$value
+  else
+    if [ $min -gt $value ]; then
+      min=$value
+    fi
+    if [ $max -lt $value ]; then
+      max=$value
+    fi
+  fi
+
+  beh_cyklu=$((beh_cyklu + 1))
+
+done < prac.csv
+
+# Zpracování argumentů příkazové řádky
+if [ "$1" == "max" ] && [ -z "$2" ]; then
+  echo "Max hodnota: $max"
+  exit 0
+fi
+
+if [ "$1" == "min" ] && [ -z "$2" ]; then
+  echo "Min hodnota: $min"
+  exit 0
+fi
+
+if [ "$1" == "min" ] && [ "$2" == "max" ]; then
+  echo "Min hodnota: $min"
+  echo "Max hodnota: $max"
+  exit 0
+fi
+
+if [ "$1" == "max" ] && [ "$2" == "min" ]; then
+  echo "Max hodnota: $max"
+  echo "Min hodnota: $min"
+  exit 0
+fi
