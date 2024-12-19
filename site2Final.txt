@@ -1,0 +1,283 @@
+enable - znena modu (zobrazování)
+show ? - listování příkazů
+config - konfigutátor
+interface vlan 1 
+ip add 192.168.0.1 255.255.255.0
+do - spustí príkaz kdekoli ale bez nápovědy
+sh cdp nei - vypíše infornace o sousedech
+
+show 
+
+username franta privilege 15 password lala - vyrobí uživatele,  privilege 15 nejvyšší oprávnění
+
+ip http server - zapne webové rozhraní
+ip http auth	local - ověření webu podle uživatelů
+
+line vty 0 - zapnutí vzdáleného terniláliu 
+login local - způsob ověřrní přihlásení
+
+vlan 20 - vyrobí novou vlan
+int range fa 0/7 - 12 - rozmezí rorhraní
+switchport acces vlan 20 - znění ptíslušnost portů v vlan
+
+# write - zmněna základní konfigurace na aktualni
+
+#showshow ip interface brief - ukaže nastavení rozhranní
+
+#showshow vlan brief - ukáže nastavení vlan a příslušnost portů
+
+//trunk
+config-if)# switchport mode trunk - změna portu na trunk
+config-if)# switchport trunk allowed valn all - kdyby nešlo trunk normálně 
+config-if)# desctription  - přidání popisu
+
+//nastavení statického routování 
+config)# ip route <adresa sítě kam> <maska> <na jakou adresu to poslat> - nastavení rotování
+
+//zapnutí logování
+config)#logging on
+config)#logging host <ip adresa serveru>
+config)#logging origin-id hostname
+config)#logging console <0-7>
+
+//nastavení času
+config)# clock timezone CET +1
+S6#clock set 13:52:00 11 NOV 2024
+
+//nastavení kontroly mac adresy
+config-if)#switchport mode access 
+config-if)#switchport port-security - zapnuti bezpečnosti
+config-if)#switchport port-security mac-address aa.bb.cc - nastavení povolené mac-adresy
+config-if)#switchport port-security violation restrict - nastavení co se má dít když špatná mac
+
+//dhcp
+config)# ip dhcp pool <nazev> - vyrobí pool
+config-dhcp)# network <adresaSítě> <maska> - přidělí rozash ze kterého přiděluje
+config-dhcp)#default-router <adresa_brany> - adersa brány
+config-dhcp)#dns-server <adresa_DNS> = adersa dns
+config-dhcp)#exit
+config)# ip dhcp excluded-address <adresa_kterou_nema_přiřadit> - vyloučení adres z poolu
+
+//sub interface
+config)# int gi 0/1.3 - vytvoření sub net
+config-subif)# encap dot1q <valnid> - přidělení do valn
+config-subif)# ip add 192.168.3.254 255.255.255.0 - přidělení adresy subinterface
+config)# int gi 0/1
+config-if)# no shut
+
+
+//statická adresa v dhcp
+S(config)#int vlan <id>
+S(config-if)#ip add dhcp
+R#show dhcp binding - zobzazí client id switche
+R(config) dhcp pool switch - nastavení poolu pro switch
+R(config-dhcp)# host <ip-adresa> <maska> - přisání jedné hostovské adresy
+S(config-if)#no ip add - odpojí switch od dhcp 
+R(config-dhcp)# cilent-id <dlouhá věc z dhcp bindingu> - nastavení statického přidělování ip pro switch 
+S(config-if)#ip add dhcp - navázání switche s dhcp 
+
+//naststavení dinamického routováni
+R(config)router ospf <proces id(jakékoli číslo)>
+R(config-router)network <ip adresa sítě (192.168.4.0)> <obrácená maska (0.0.0.255)> area 0 -píšu všechny připojené adresy
+R(config-router)default-information originate - distribuuje default route
+R(config-router)passive fa 0/0
+
+//zapnuí NAT
+R(config)int fa 0/0 
+R(config-in)ip nat outside
+R(confif)int fa 0/1.4
+R(config-in)ip nat inside
+R(config)int fa 0/1.3
+R(config-in)ip nat inside
+
+//nastavení konkrétního překládání
+R(config)ip nat inside source static <ip PC> interface fa 0/0
+R(config)show ip nat translations
+
+//výroba acceslistu
+R(config) ip access-list standard <nazev>
+R(config-std_nacl)permit <ip-adr síte> <reverse mask> - pro každou síť 
+R(config)ip nat inside souce list <nazev listu> int fa0/0 overload
+
+//romon problem
+confreg 0x2102 (0x2142) -pro načtení aktualního nastavení (nastavení vynulovat)
+reset 
+
+//zapnutí vyjednávání o kabelech(křížení)
+config-int) mdix auto
+
+xd#show run
+Building configuration...
+
+Current configuration : 3839 bytes
+!
+! Last configuration change at 05:13:43 UTC Mon Mar 1 1993
+!
+version 15.0
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname xd
+!
+boot-start-marker
+boot-end-marker
+!
+!
+username franta privilege 15 password 0 lala
+no aaa new-model
+system mtu routing 1500
+ip routing
+ip dhcp excluded-address 192.168.2.1 192.168.2.10
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-1310985216
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1310985216
+ revocation-check none
+ rsakeypair TP-self-signed-1310985216
+!
+!
+crypto pki certificate chain TP-self-signed-1310985216
+ certificate self-signed 01
+  3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 31333130 39383532 3136301E 170D3933 30333031 30303031
+  30305A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D31 33313039
+  38353231 3630819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281
+  8100A0D9 FF40139B 620FBEC1 59A09A2F 82D73231 F8B8FB30 510D0BF7 56A9BB8A
+  31EF4BEB 342971C0 3308C284 60EEB828 242B7209 ED401C28 F4873DD0 F8FA148F
+  BF81E39C 3BB5FEE0 FFFD95CD 9E61FE27 05DDF742 85C37A05 C787272B 6621DBDD
+  32AD3F62 1C659F98 27F51C81 C18236AC FDCDB322 DC5606FF 531FA550 12C4DF1F
+  ADC50203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603
+  551D2304 18301680 14476087 757FF06C B34311A7 2B55DAB6 DD1BD76C B6301D06
+  03551D0E 04160414 47608775 7FF06CB3 4311A72B 55DAB6DD 1BD76CB6 300D0609
+  2A864886 F70D0101 05050003 8181005B 7AC2E4B5 C2207053 BE084FE2 475E6D60
+  01956AAF 756C7A07 5DC9DA0F CD3C9B5F 8BE037CF 60ED55B2 5659F510 07D3947E
+  039F3A38 13E2BB72 90C9DD94 F8A436F1 E4FA6A6E DDDB0DC4 3E23C1F2 C596D7A0
+  3178D00A 5E6021CC C243DEE5 056A0F70 FDFCAD66 4DDE285F CE9C0831 2FEA22CA
+  B65515A4 D7CE97AC F37179D2 1CF739
+        quit
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/1
+ switchport access vlan 2
+ switchport mode trunk
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+ switchport access vlan 2
+!
+interface FastEthernet0/6
+ switchport access vlan 2
+!
+interface FastEthernet0/7
+ switchport access vlan 2
+!
+interface FastEthernet0/8
+ switchport access vlan 2
+!
+interface FastEthernet0/9
+ switchport access vlan 2
+!
+interface FastEthernet0/10
+ switchport access vlan 4
+!
+interface FastEthernet0/11
+ switchport access vlan 20
+!
+interface FastEthernet0/12
+ switchport access vlan 20
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+ switchport access vlan 3
+!
+interface FastEthernet0/21
+ switchport mode trunk
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+ switchport mode trunk
+!
+interface FastEthernet0/24
+ switchport mode trunk
+ switchport port-security violation restrict
+ switchport port-security mac-address aaaa.bbbb.cccc
+!
+interface GigabitEthernet0/1
+ shutdown
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ ip address 192.168.0.69 255.255.255.0
+!
+interface Vlan2
+ no ip address
+!
+interface Vlan3
+ ip address dhcp
+!
+interface Vlan4
+ ip address dhcp
+!
+interface Vlan20
+ no ip address
+!
+ip default-gateway 192.168.3.254
+ip http server
+ip http authentication local
+ip http secure-server
+logging origin-id hostname
+!
+!
+!
+line con 0
+ logging synchronous
+line vty 0 4
+ login
+line vty 5 15
+ login
+!
+!
+monitor session 1 source interface Fa0/15 , Fa0/22
+monitor session 1 destination interface Fa0/18
+end
+
